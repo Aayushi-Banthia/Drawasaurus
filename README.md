@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # AI Draw Battle — Streamlit
 
 A Drawasaurus-inspired sketch game with three independently trained judges:
@@ -65,3 +66,6 @@ Each model's top-1 prediction is compared with the prompt. Every correct judge a
 - For a fair comparison, all three models use the same class set and sampled dataset.
 - The initial implementation uses a standard Streamlit canvas. It supports drawing, clearing, and color/brush controls from the component toolbar.
 - Dataset credit: Google Creative Lab and Quick, Draw! contributors. The dataset is licensed CC BY 4.0: https://creativecommons.org/licenses/by/4.0/
+=======
+# Drawasaurus
+>>>>>>> 458ef5cb14d4b3585061947169487803e239319d
