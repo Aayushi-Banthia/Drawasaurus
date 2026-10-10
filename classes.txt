@@ -1,0 +1,8 @@
+apple
+cat
+airplane
+fish
+house
+tree
+star
+bicycle
