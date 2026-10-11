@@ -32,10 +32,22 @@ PEN_COLORS = {
 }
 
 MODEL_SPECS = {
-    "ResNet": ("resnet18", "resnet18.pt"),
-    "VGG-16": ("vgg16", "vgg16.pt"),
-    "MobileNet": ("mobilenet_v3_small", "mobilenet_v3_small.pt"),
-    "Pico" : ("Pico" , "best_pico_weights.pt") #added the pico model 
+    "ResNet18": {
+        "architecture": "resnet18",
+        "checkpoint": "resnet18.pt",
+    },
+    "VGG16": {
+        "architecture": "vgg16",
+        "checkpoint": "vgg16_pretrained.pt",
+    },
+    "MobileNetV3-Small": {
+        "architecture": "mobilenet_v3_small",
+        "checkpoint": "mobilenet_v3_small_pretrained.pt",
+    },
+    "Pico": {
+        "architecture": "Pico",
+        "checkpoint": "best_pico_weights.pt",
+    },
 }
 ARCH_LABELS = {
     "resnet18": "ResNet-18",
@@ -43,6 +55,7 @@ ARCH_LABELS = {
     "mobilenet_v3_small": "MobileNetV3-Small",
     "Pico" : "Pico"
 }
+
 
 def join_names(names):
     names = list(names)
@@ -53,7 +66,7 @@ st.set_page_config(page_title="AI Draw Battle", page_icon="🎨", layout="wide")
 # ---------------------------------------------------------------------------
 # STYLE (presentation only: no game logic lives here)
 # ---------------------------------------------------------------------------
-JUDGE_COLORS = {"ResNet": "#2563EB", "VGG-16": "#64748B", "MobileNet": "#0F766E", "Pico" : "#8B0000"} #change
+JUDGE_COLORS = {"ResNet": "#2563EB", "VGG16": "#64748B", "MobileNet": "#0F766E", "Pico" : "#8B0000"} #change
 
 def html(markup):
     """Render raw HTML (lines are stripped so Markdown never mistakes indentation for code)."""
@@ -123,38 +136,75 @@ def read_classes():
     return ["apple", "cat", "airplane", "fish", "house", "tree", "star", "bicycle"]
 
 CLASSES = read_classes()
+
+
+
 @st.cache_resource
 def load_judges(class_names):
     loaded = {}
     missing = []
-    errors = {}  # NEW: weights that exist but don't match classes.txt
-    for label, (arch, filename) in MODEL_SPECS.items():
+    errors = {}
+
+    for label, spec in MODEL_SPECS.items():
+        arch = spec["architecture"]
+        filename = spec["checkpoint"]
         path = WEIGHTS_DIR / filename
+
         if not path.exists():
             missing.append(label)
             continue
+
+        # Build the appropriate architecture for each judge
         if arch == "resnet18":
             model = models.resnet18(weights=None)
-            model.fc = torch.nn.Linear(model.fc.in_features, len(class_names))
+            model.fc = torch.nn.Linear(
+                model.fc.in_features, len(class_names)
+            )
+
         elif arch == "vgg16":
             model = models.vgg16(weights=None)
-            model.classifier[6] = torch.nn.Linear(model.classifier[6].in_features, len(class_names))
-        elif arch == "Pico":
-            model = PICO(num_classes = len(class_names))
-        else:
+            model.avgpool = torch.nn.AdaptiveAvgPool2d((3, 3))
+            model.classifier[0] = torch.nn.Linear(512 * 3 * 3, 4096)
+            model.classifier[6] = torch.nn.Linear(
+                model.classifier[6].in_features, len(class_names)
+            )
+
+        elif arch == "mobilenet_v3_small":
             model = models.mobilenet_v3_small(weights=None)
-            model.classifier[3] = torch.nn.Linear(model.classifier[3].in_features, len(class_names))
-        try:  # CHANGED: a wrong-sized checkpoint no longer crashes the whole app
-            checkpoint = torch.load(path, map_location=DEVICE)
-            if arch == "Pico":
-                model.load_state_dict(checkpoint) #since pico's state dict was stored directly 
-            else:
-                model.load_state_dict(checkpoint["model_state"])
-        except Exception as exc:
-            errors[label] = str(exc).splitlines()[0][:140]
+            model.classifier[3] = torch.nn.Linear(
+                model.classifier[3].in_features, len(class_names)
+            )
+
+        elif arch == "Pico":
+            model = PICO(num_classes=len(class_names))
+
+        else:
+            errors[label] = f"Unknown architecture: {arch}"
             continue
-        model.to(DEVICE).eval()
-        loaded[label] = model
+
+        try:
+            checkpoint = torch.load(path, map_location=DEVICE)
+
+            if arch == "Pico":
+                # PICO saves its state dictionary directly
+                model.load_state_dict(checkpoint)
+            else:
+                # The other models may save a checkpoint dictionary
+                # or a state dictionary directly
+                state_dict = (
+                    checkpoint["model_state"]
+                    if isinstance(checkpoint, dict)
+                    and "model_state" in checkpoint
+                    else checkpoint
+                )
+                model.load_state_dict(state_dict)
+
+            model.to(DEVICE).eval()
+            loaded[label] = model
+
+        except Exception as exc:
+            errors[label] = f"{type(exc).__name__}: {exc}"[:200]
+
     return loaded, missing, errors
 
 def preprocess_canvas(canvas_rgba):
@@ -172,7 +222,10 @@ def preprocess_canvas(canvas_rgba):
     rgb = Image.merge("RGB", (pil, pil, pil))
     transform = transforms.Compose([
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
+        transforms.Normalize(
+    mean=[0.485, 0.456, 0.406],
+    std=[0.229, 0.224, 0.225],
+     ),
     ])
     return transform(rgb).unsqueeze(0).to(DEVICE), pil
 
@@ -222,7 +275,10 @@ def render_footer():
     with st.expander("About this prototype"):
         st.write(
             "The game uses 8 selected Quick, Draw! categories, configured for 3,000 training drawings per class. "
-            + join_names(ARCH_LABELS[a] for a, _ in MODEL_SPECS.values())
+                    + join_names(
+            ARCH_LABELS[spec["architecture"]]
+            for spec in MODEL_SPECS.values()
+)
             + " are trained locally and loaded once per app session. "
             f"The prototype awards {POINTS_PER_JUDGE} points per model whose top prediction matches the "
             "prompt; confidence is shown for transparency but does not currently change the score."
