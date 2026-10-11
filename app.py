@@ -68,56 +68,317 @@ st.set_page_config(page_title="AI Draw Battle", page_icon="🎨", layout="wide")
 # ---------------------------------------------------------------------------
 JUDGE_COLORS = {"ResNet": "#2563EB", "VGG16": "#64748B", "MobileNet": "#0F766E", "Pico" : "#8B0000"} #change
 
+
 def html(markup):
-    """Render raw HTML (lines are stripped so Markdown never mistakes indentation for code)."""
-    st.markdown("".join(line.strip() for line in markup.strip().splitlines()), unsafe_allow_html=True)
+    """Render raw HTML without unwanted indentation."""
+    st.markdown(
+        "".join(line.strip() for line in markup.strip().splitlines()),
+        unsafe_allow_html=True,
+    )
+
 
 st.markdown("""
 <style>
-html, body, [class*="st-"], .stApp {font-family: Arial, sans-serif;}
-.stApp {background: #f7f8fa; color: #1f2937;}
-.block-container {max-width: 1180px; padding-top: 1.5rem;}
-.hero {padding: 1.4rem 1.6rem; border-radius: 12px; background: #ffffff;
-       border: 1px solid #e5e7eb; margin-bottom: 1.2rem;}
-.hero h1 {margin:0; color:#111827; font-weight:800; font-size:2.2rem;}
-.hero p {margin:.35rem 0 0; color:#4b5563; font-size:1rem;}
-.pills {display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.9rem;}
-.pill {background:#f3f4f6; border:1px solid #e5e7eb; border-radius:6px; padding:.25rem .7rem;
-       font-weight:700; font-size:.85rem; color:#374151;}
-.pill i {display:inline-block; width:.55rem; height:.55rem; border-radius:50%; margin-right:.4rem;}
-.target {background:#fff; border:2px dashed #9ca3af; border-radius:12px; text-align:center; padding:.9rem 1rem;
-         margin:.2rem 0 1rem;}
-.target .kicker {font-size:.8rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#6b7280;}
-.target .word {font-size:3rem; font-weight:800; line-height:1.1; color:#1f2937;}
-.jcard {border-radius:10px; padding:.85rem 1rem; margin-bottom:.7rem; border:1px solid #e5e7eb; background:#fff;}
-.jcard.ok {background:#f0fdf4; border-color:#86efac;}
-.jcard.no {background:#fff; border-color:#d1d5db;}
-.jtop {display:flex; justify-content:space-between; align-items:center;}
-.jname {font-weight:700; color:#111827; font-size:1rem;}
-.jbadge {font-weight:700; font-size:.8rem; border-radius:5px; padding:.15rem .5rem;}
-.jcard.ok .jbadge {background:#dcfce7; color:#166534;} .jcard.no .jbadge {background:#f3f4f6; color:#4b5563;}
-.jguess {font-size:1.5rem; font-weight:800; color:#111827; line-height:1.2; margin:.15rem 0 .35rem;}
-.jbar {height:8px; background:#e5e7eb; border-radius:4px; overflow:hidden;}
-.jbar i {display:block; height:100%; border-radius:4px;}
-.jconf {font-size:.82rem; font-weight:600; color:#6b7280; margin-top:.25rem;}
-.jempty {border:1px dashed #d1d5db; border-radius:10px; padding:1.1rem; text-align:center; color:#6b7280; background:#fff;}
-.points {border-radius:10px; padding:.75rem 1rem; text-align:center; font-weight:800; font-size:1.2rem; margin:.4rem 0 .8rem;
-         background:#166534; color:#fff;}
-.points.zero {background:#6b7280;}
-.over {text-align:center; border-radius:12px; padding:1.3rem 1rem; margin-bottom:1rem; color:#111827;
-       background:#fff; border:1px solid #e5e7eb;}
-.over .trophy {font-size:2.5rem; line-height:1;} .over .t {font-size:1.6rem; font-weight:800;} .over .s {font-weight:600; color:#4b5563;}
-[data-testid="stMetric"] {background:#fff; border:1px solid #e5e7eb; padding:12px 16px; border-radius:10px;}
-[data-testid="stMetricValue"] {font-weight:800; color:#111827;}
-[data-testid="stMetricLabel"] {font-weight:600; color:#6b7280;}
-[data-testid="stBaseButton-primary"], [data-testid="stBaseButton-secondary"] {border-radius:8px; font-weight:700; padding:.5rem 1rem;}
-[data-testid="stBaseButton-primary"] {background:#2563eb !important; border:1px solid #2563eb !important; color:#fff !important;}
-[data-testid="stBaseButton-secondary"] {border:1px solid #d1d5db;}
-[data-testid="stBaseButton-primary"]:hover {background:#1d4ed8 !important;}
-[data-testid="stBaseButton-primary"]:disabled {background:#e5e7eb !important; color:#9ca3af !important; border-color:#e5e7eb !important;}
-.st-key-toolbar, .st-key-canvas_card {border-radius:10px; background:#fff; border:1px solid #e5e7eb; margin-bottom:.4rem;}
-h2, h3 {font-weight:800 !important; color:#111827;}
-@media (max-width: 768px) {.hero h1 {font-size:1.7rem;} .target .word {font-size:2.4rem;}}
+
+/* Fix Streamlit icon rendering */
+[data-testid="stExpanderToggleIcon"] span,
+[data-testid="stIconMaterial"] {
+    font-family: "Material Symbols Rounded", sans-serif !important;
+    font-style: normal !important;
+    font-weight: normal !important;
+    line-height: 1 !important;
+    letter-spacing: normal !important;
+}
+
+html, body, [class*="st-"], .stApp {
+    font-family: Arial, sans-serif;
+}
+
+.stApp {
+    background: #f7f8fa;
+    color: #1f2937;
+}
+
+.block-container {
+    max-width: 1180px;
+    padding-top: 1.5rem;
+}
+
+.hero {
+    padding: 1.4rem 1.6rem;
+    border-radius: 12px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    margin-bottom: 1.2rem;
+}
+
+.hero h1 {
+    margin: 0;
+    color: #111827;
+    font-weight: 800;
+    font-size: 2.2rem;
+}
+
+.hero p {
+    margin: .35rem 0 0;
+    color: #4b5563;
+    font-size: 1rem;
+}
+
+.pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    margin-top: .9rem;
+}
+
+.pill {
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: .25rem .7rem;
+    font-weight: 700;
+    font-size: .85rem;
+    color: #374151;
+}
+
+.pill i {
+    display: inline-block;
+    width: .55rem;
+    height: .55rem;
+    border-radius: 50%;
+    margin-right: .4rem;
+}
+
+.target {
+    background: #fff;
+    border: 2px dashed #9ca3af;
+    border-radius: 12px;
+    text-align: center;
+    padding: .9rem 1rem;
+    margin: .2rem 0 1rem;
+}
+
+.target .kicker {
+    font-size: .8rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: #6b7280;
+}
+
+.target .word {
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1.1;
+    color: #1f2937;
+}
+
+.jcard {
+    border-radius: 10px;
+    padding: .85rem 1rem;
+    margin-bottom: .7rem;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+}
+
+.jcard.ok {
+    background: #f0fdf4;
+    border-color: #86efac;
+}
+
+.jcard.no {
+    background: #fff;
+    border-color: #d1d5db;
+}
+
+.jtop {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.jname {
+    font-weight: 700;
+    color: #111827;
+    font-size: 1rem;
+}
+
+.jbadge {
+    font-weight: 700;
+    font-size: .8rem;
+    border-radius: 5px;
+    padding: .15rem .5rem;
+}
+
+.jcard.ok .jbadge {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.jcard.no .jbadge {
+    background: #f3f4f6;
+    color: #4b5563;
+}
+
+.jguess {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #111827;
+    line-height: 1.2;
+    margin: .15rem 0 .35rem;
+}
+
+.jbar {
+    height: 8px;
+    background: #e5e7eb;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.jbar i {
+    display: block;
+    height: 100%;
+    border-radius: 4px;
+}
+
+.jconf {
+    font-size: .82rem;
+    font-weight: 600;
+    color: #6b7280;
+    margin-top: .25rem;
+}
+
+.jempty {
+    border: 1px dashed #d1d5db;
+    border-radius: 10px;
+    padding: 1.1rem;
+    text-align: center;
+    color: #6b7280;
+    background: #fff;
+}
+
+.points {
+    border-radius: 10px;
+    padding: .75rem 1rem;
+    text-align: center;
+    font-weight: 800;
+    font-size: 1.2rem;
+    margin: .4rem 0 .8rem;
+    background: #166534;
+    color: #fff;
+}
+
+.points.zero {
+    background: #6b7280;
+}
+
+.over {
+    text-align: center;
+    border-radius: 12px;
+    padding: 1.3rem 1rem;
+    margin-bottom: 1rem;
+    color: #111827;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+}
+
+.over .trophy {
+    font-size: 2.5rem;
+    line-height: 1;
+}
+
+.over .t {
+    font-size: 1.6rem;
+    font-weight: 800;
+}
+
+.over .s {
+    font-weight: 600;
+    color: #4b5563;
+}
+
+[data-testid="stMetric"] {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    padding: 12px 16px;
+    border-radius: 10px;
+}
+
+[data-testid="stMetricValue"] {
+    font-weight: 800;
+    color: #111827;
+}
+
+[data-testid="stMetricLabel"] {
+    font-weight: 600;
+    color: #6b7280;
+}
+
+[data-testid="stBaseButton-primary"],
+[data-testid="stBaseButton-secondary"] {
+    border-radius: 8px;
+    font-weight: 700;
+    padding: .5rem 1rem;
+}
+
+[data-testid="stBaseButton-primary"] {
+    background: #2563eb !important;
+    border: 1px solid #2563eb !important;
+    color: #fff !important;
+}
+
+[data-testid="stBaseButton-secondary"] {
+    background: #ffffff !important;
+    color: #1f2937 !important;
+    border: 1px solid #d1d5db !important;
+}
+
+/* Keep secondary button text readable on hover */
+[data-testid="stBaseButton-secondary"]:hover {
+    background: #eff6ff !important;
+    color: #1d4ed8 !important;
+    border-color: #2563eb !important;
+}
+
+[data-testid="stBaseButton-secondary"]:hover p,
+[data-testid="stBaseButton-secondary"]:hover span {
+    color: #1d4ed8 !important;
+}
+
+[data-testid="stBaseButton-primary"]:hover {
+    background: #1d4ed8 !important;
+}
+
+[data-testid="stBaseButton-primary"]:disabled {
+    background: #e5e7eb !important;
+    color: #9ca3af !important;
+    border-color: #e5e7eb !important;
+}
+
+.st-key-toolbar,
+.st-key-canvas_card {
+    border-radius: 10px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    margin-bottom: .4rem;
+}
+
+h2, h3 {
+    font-weight: 800 !important;
+    color: #111827;
+}
+
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 1.7rem;
+    }
+
+    .target .word {
+        font-size: 2.4rem;
+    }
+}
+
 </style>
 """, unsafe_allow_html=True)
 
