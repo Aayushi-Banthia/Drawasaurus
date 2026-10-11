@@ -1,8 +1,10 @@
 apple
+bicycle
+car
 cat
-airplane
 fish
 house
-tree
 star
-bicycle
+sun
+tree
+umbrella
