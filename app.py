@@ -183,7 +183,11 @@ def load_judges(class_names):
             continue
 
         try:
-            checkpoint = torch.load(path, map_location=DEVICE)
+            checkpoint = torch.load(
+            path,
+            map_location=DEVICE,
+            weights_only=False
+        )
 
             if arch == "Pico":
                 # PICO saves its state dictionary directly
