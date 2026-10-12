@@ -21,8 +21,7 @@ TOTAL_ROUNDS = 5
 POINTS_PER_JUDGE = 10
 
 # NEW: pen colours. Only vivid/dark colours on purpose: very light colours (yellow, pastel pink)
-# would give the models faint strokes and hurt their predictions.
-PEN_COLORS = {
+# would give the models faint -uu 
     "⚫ Black": "#111111",
     "🔴 Red": "#E63946",
     "🔵 Blue": "#1D4ED8",
@@ -539,7 +538,7 @@ def render_footer():
     st.divider()
     with st.expander("About this prototype"):
         st.write(
-            "The game uses 8 selected Quick, Draw! categories, configured for 3,000 training drawings per class. "
+            "The game uses 10 selected Quick, Draw! categories, configured for 3,000 training drawings per class. "
                     + join_names(
             ARCH_LABELS[spec["architecture"]]
             for spec in MODEL_SPECS.values()
