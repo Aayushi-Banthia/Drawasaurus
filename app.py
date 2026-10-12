@@ -20,8 +20,8 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 TOTAL_ROUNDS = 5
 POINTS_PER_JUDGE = 10
 
-# NEW: pen colours. Only vivid/dark colours on purpose: very light colours (yellow, pastel pink)
-# would give the models faint -uu 
+# Pen colours for drawing
+PEN_COLORS = {
     "⚫ Black": "#111111",
     "🔴 Red": "#E63946",
     "🔵 Blue": "#1D4ED8",
@@ -29,7 +29,6 @@ POINTS_PER_JUDGE = 10
     "🟠 Orange": "#F97316",
     "🟣 Purple": "#7E22CE",
 }
-
 MODEL_SPECS = {
     "ResNet18": {
         "architecture": "resnet18",
