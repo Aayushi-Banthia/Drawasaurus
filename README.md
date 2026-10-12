@@ -1,71 +1,82 @@
 # 🎨 Drawasaurus — AI Draw Battle
 
-**Drawasaurus: AI Draw Battle** is an interactive, whiteboard-based drawing game inspired by Drawasaurus, built using Streamlit and deep learning.
+**Draw it. Submit it. Challenge four AI models.**
 
-The objective is simple: players are given the name of an object and must draw it on a digital whiteboard. Once submitted, the drawing is evaluated by three independently trained AI classifiers — **ResNet, VGG, and MobileNet** — that attempt to recognize the object.
+Drawasaurus is an interactive AI-powered drawing game built with **Python, Streamlit, and PyTorch**. Players sketch randomly assigned objects on a digital canvas and challenge four deep-learning models to recognize their drawings.
 
-The more AI judges a player can convince, the more points they earn!
+The game features four AI judges — **ResNet-18, VGG-16, MobileNetV3-Small, and Pico** — each independently predicting the object represented by a submitted sketch. Players earn points for every model that correctly identifies the target.
 
-The project combines an engaging drawing-game experience with practical applications of computer vision, image classification, and deep learning.
+By combining interactive gameplay with computer vision and deep-learning model comparison, Drawasaurus provides a practical demonstration of how different CNN architectures interpret human-drawn sketches.
 
-## ✨ Features
+---
 
-- **Interactive Drawing Whiteboard:** Draw objects freehand using the Streamlit canvas, with options to clear and redraw.
-- **Randomized Drawing Prompts:** Receive an object name to draw in each round.
-- **Three AI Judges:** Every submitted drawing is evaluated by three separate deep-learning models.
-- **Independent Predictions:** Each model predicts the most likely object class independently.
-- **Confidence Scores:** View the confidence score associated with each judge's prediction.
-- **Dynamic Scoring System:** Earn points for every AI judge that correctly identifies your drawing.
-- **Multi-Round Gameplay:** Continue playing with new drawing prompts and accumulate points.
-- **Quick, Draw! Dataset Integration:** Train the classifiers using a selected subset of Google's Quick, Draw! dataset.
-- **Custom Model Training:** Train ResNet, VGG, and MobileNet on the same selected object categories.
-- **CPU and GPU Support:** Use CUDA when available, with CPU fallback through PyTorch.
-- **Cached Model Loading:** Reuse loaded models during gameplay instead of reloading them for every interaction.
+## ✨ Key Features
+
+- **Interactive Drawing Canvas:** Sketch objects freehand using a digital whiteboard.
+- **Customizable Drawing Tools:** Choose pen colors, adjust brush sizes, erase strokes, and clear the canvas.
+- **Randomized Drawing Prompts:** Receive a target object for each round.
+- **Four Independent AI Judges:** Evaluate drawings using ResNet-18, VGG-16, MobileNetV3-Small, and Pico.
+- **Prediction Comparison:** Examine each model's prediction independently.
+- **Confidence Scores:** View prediction confidence when available.
+- **Dynamic Scoring:** Earn points for each correctly identifying model.
+- **Five-Round Gameplay:** Track your score across a complete game.
+- **Pretrained Checkpoints:** Load available trained weights without requiring local training.
+- **Cached Model Loading:** Avoid repeatedly loading model checkpoints during a session.
+- **CPU and GPU Support:** Use CUDA-compatible GPUs when available, with CPU fallback.
 
 ## 🕹️ How to Play
 
-1. Start the game and view the target object displayed on the screen.
-2. Draw the object on the digital whiteboard.
-3. Submit your drawing for evaluation.
-4. Let all three AI judges analyze your sketch.
-5. Review their predictions and confidence scores.
-6. Earn points for every judge that correctly recognizes the target.
-7. Move to the next round and try to convince all three judges!
+1. Launch Drawasaurus and start a game.
+2. View the target object assigned for the round.
+3. Sketch the object using the drawing canvas and available tools.
+4. Submit your drawing for evaluation.
+5. Let all four AI judges analyze the sketch.
+6. Compare their predictions and confidence scores, where available.
+7. Earn points for every judge that correctly identifies the target.
+8. Continue through all five rounds.
+9. Review your final score and see how well your drawing performed against the AI models.
 
-### 🏆 Scoring System
+## 🏆 Scoring System
 
-Each correct judge awards **10 points**.
+Each AI judge awards **10 points** when its top prediction matches the target object.
 
-| Correct AI Judges | Points Earned |
-|:---:|:---:|
-| 0 out of 3 | 0 |
-| 1 out of 3 | 10 |
-| 2 out of 3 | 20 |
-| 3 out of 3 | 30 |
+| Correct AI predictions | Points earned |
+|:---:|---:|
+| 0 / 4 | 0 |
+| 1 / 4 | 10 |
+| 2 / 4 | 20 |
+| 3 / 4 | 30 |
+| 4 / 4 | 40 |
 
-Scoring is based on each model's top prediction. Confidence scores are displayed for reference but do not currently affect the points awarded.
+**Maximum score: 200 points** across five rounds.
+
+Scoring is based on top-prediction correctness. Confidence scores are displayed for reference and do not directly affect the points awarded.
 
 ## 🧠 Meet the AI Judges
 
-The game uses three different convolutional neural network architectures to classify player drawings.
+Drawasaurus compares four model architectures to explore how different neural networks recognize hand-drawn objects.
 
-| Model | Architecture | Purpose |
+| Model | Architecture | Key characteristics |
 |---|---|---|
-| **ResNet** | ResNet-18 | Classifies drawings using residual connections. |
-| **VGG** | VGG-11 | Classifies drawings using stacked convolutional layers. |
-| **MobileNet** | MobileNetV3-Small | Provides an efficient image-classification model designed with lightweight computation in mind. |
+| ResNet-18 | Residual CNN | Uses residual connections to support feature learning in deeper networks. |
+| VGG-16 | Deep CNN | Uses stacked convolutional layers to learn hierarchical visual features. |
+| MobileNetV3-Small | Lightweight CNN | Designed for computational efficiency and reduced model complexity. |
+| Pico | Custom CNN architecture | Provides an additional model for architectural comparison. |
 
-Each model is trained separately using the same selected dataset categories. Their predictions are compared against the target object to determine the player's score.
+Each model processes the submitted sketch and generates predictions over the supported object categories. The game evaluates each model separately against the target label.
+
+**Important:** The models act as independent judges rather than combining their predictions into a single ensemble output.
 
 ## 📊 Dataset
 
-This project uses a subset of Google's **Quick, Draw! dataset**, which contains millions of human-drawn doodles organized into object categories.
+Drawasaurus uses a selected subset of Google's **Quick, Draw!** dataset, a large collection of human-drawn sketches organized into object categories.
 
-**Dataset:** [Google Quick, Draw!](https://github.com/googlecreativelab/quickdraw-dataset)
+- **Dataset repository:** [Google Quick, Draw! Dataset](https://github.com/googlecreativelab/quickdraw-dataset)
+- **NumPy bitmap files:** [Quick, Draw! Bitmap Dataset](https://storage.googleapis.com/quickdraw_dataset/full/numpy_bitmap/)
 
-The training script downloads rasterized bitmap files from the dataset and uses a configurable number of examples from each selected category.
+### Supported Categories
 
-### Default Categories
+The default configuration includes eight object classes:
 
 - Apple
 - Cat
@@ -76,41 +87,60 @@ The training script downloads rasterized bitmap files from the dataset and uses 
 - Star
 - Bicycle
 
-The default configuration samples up to 2,500 drawings per category.
+### Training Data
+
+The training pipeline supports configurable sample counts per category. The earlier configuration allows up to 2,500 drawings per class, subject to dataset availability and the selected training settings.
+
+The `classes.txt` file defines the supported labels. Its contents and ordering must remain consistent with the class configuration used by the corresponding model checkpoints.
 
 ## 🛠️ Tech Stack
 
-| Technology | Usage |
+| Technology | Purpose |
 |---|---|
-| Python | Core programming language |
-| Streamlit | Web interface and game logic |
-| Streamlit Drawable Canvas | Interactive drawing whiteboard |
-| PyTorch | Deep-learning model training and inference |
-| Torchvision | ResNet, VGG, and MobileNet architectures |
-| NumPy | Dataset and array processing |
-| Pillow | Image preprocessing and resizing |
-| Quick, Draw! Dataset | Training data for the classifiers |
+| Python | Application logic and model training |
+| Streamlit | Web interface and gameplay |
+| Streamlit Drawable Canvas | Interactive sketching interface |
+| PyTorch | Deep-learning training and inference |
+| Torchvision | ResNet-18, VGG-16, and MobileNetV3-Small architectures |
+| NumPy | Numerical and image-array processing |
+| Pillow | Image manipulation and resizing |
+| Quick, Draw! | Training dataset |
+| Git | Version control |
+| Git LFS | Large model-checkpoint storage |
 
 ## 📁 Project Structure
 
 ```text
 Drawasaurus/
-├── app.py              # Streamlit game interface
-├── train.py            # Dataset download and model training
-├── requirements.txt    # Project dependencies
-├── classes.txt         # Selected model classes
-├── README.md           # Project documentation
-├── .gitignore          # Files excluded from Git
-├── data/               # Downloaded dataset files
-└── weights/            # Trained model weights
+├── app.py                          # Main game application
+├── pico.py                         # Pico model architecture
+├── train.py                        # Original training pipeline
+├── train_pretrained.py             # Pretrained-model training pipeline
+├── requirements.txt                # Python dependencies
+├── classes.txt                     # Supported object categories
+├── README.md                       # Project documentation
+├── .gitignore                      # Git ignore rules
+├── .gitattributes                  # Git LFS configuration
+├── data/                           # Downloaded training data
+└── weights/                        # Trained model checkpoints
     ├── resnet18.pt
-    ├── vgg11.pt
-    └── mobilenet_v3_small.pt
+    ├── vgg16_pretrained.pt
+    ├── mobilenet_v3_small_pretrained.pt
+    └── best_pico_weights.pt
 ```
 
-The `data/` and `weights/` directories are generated locally and are excluded from Git by default.
+The `data/` directory may be generated locally during training. The `weights/` directory contains checkpoints required for inference. Large checkpoint files may be tracked using Git LFS.
+
+*Note: The exact repository contents may vary by version. Verify checkpoint filenames against the current application configuration.*
 
 ## ⚙️ Installation and Setup
+
+### Prerequisites
+
+- Python installed on your system
+- Git
+- Git LFS for repositories that use it to distribute model checkpoints
+- Sufficient memory and storage for the dependencies and model weights
 
 ### 1. Clone the Repository
 
@@ -119,7 +149,20 @@ git clone https://github.com/Aayushi-Banthia/Drawasaurus.git
 cd Drawasaurus
 ```
 
-### 2. Create a Virtual Environment
+### 2. Download Model Checkpoints
+
+If the repository uses Git LFS for model weights, install Git LFS using the [official installation guide](https://git-lfs.com/).
+
+Initialize Git LFS and retrieve the tracked files:
+
+```bash
+git lfs install
+git lfs pull
+```
+
+If the required checkpoints are already available locally, proceed to the next step.
+
+### 3. Create a Virtual Environment
 
 **Windows PowerShell**
 
@@ -128,45 +171,69 @@ py -m venv .venv
 .\.venv\Scripts\Activate.ps1
 ```
 
-**macOS/Linux**
+**macOS / Linux**
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-### 3. Install Dependencies
+### 4. Install Dependencies
 
 ```bash
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
 
-If PyTorch installation encounters an issue, refer to the [official PyTorch installation guide](https://pytorch.org/get-started/locally/).
+If PyTorch or Torchvision installation fails, consult the [official PyTorch installation guide](https://pytorch.org/get-started/locally/) and select the appropriate configuration for your operating system and hardware.
 
-## 🚀 Training the AI Judges
+### 5. Verify Model Weights
 
-Before playing, train the three models using the selected Quick, Draw! categories.
+Before launching the application, check that the required model checkpoints exist and are compatible with their respective architectures.
 
-Run:
+Missing or incompatible checkpoints may prevent individual AI judges from loading correctly.
+
+## 🎮 Run the Application
+
+Once the dependencies and required checkpoints are available, start the game:
+
+```bash
+python -m streamlit run app.py
+```
+
+Open the local URL printed in your terminal. By default, Streamlit typically uses:
+
+```text
+http://localhost:8501
+```
+
+You can now start drawing and challenge the four AI judges.
+
+**You do not need to train the models just to play** if the required compatible checkpoints are already available.
+
+## 🧪 Training the Models (Optional)
+
+Drawasaurus includes training scripts for experimenting with model training and initialization strategies.
+
+### Original Training Pipeline
 
 ```bash
 python train.py
 ```
 
-The training pipeline:
+The original pipeline prepares the selected Quick, Draw! dataset, preprocesses the images, trains the supported models, and saves checkpoints according to the implementation.
 
-1. Downloads the required dataset files.
-2. Selects a subset of drawings from each category.
-3. Preprocesses the images for model input.
-4. Trains ResNet-18, VGG-11, and MobileNetV3-Small independently.
-5. Saves the trained weights in the `weights/` directory.
+### ImageNet-Pretrained Training Pipeline
 
-Training all three models can take considerable time on a CPU. A CUDA-capable GPU is recommended for faster training.
+```bash
+python train_pretrained.py
+```
+
+This pipeline uses ImageNet-pretrained initialization for the supported ResNet-18, VGG, and MobileNet architectures before training on the selected drawing categories.
 
 ### Quick Training Test
 
-To test the pipeline with fewer examples and one epoch, use:
+For a smaller experimental run, reduce the sample count and number of epochs.
 
 **Windows PowerShell**
 
@@ -176,59 +243,72 @@ $env:QD_EPOCHS="1"
 python train.py
 ```
 
-**macOS/Linux**
+**macOS / Linux**
 
 ```bash
 QD_SAMPLES_PER_CLASS=200 QD_EPOCHS=1 python train.py
 ```
 
-These settings are intended for a quick test, not for achieving strong classification performance.
+These settings are intended to test the training pipeline, not to produce production-quality models.
 
-## 🎮 Running the Game
+**Note:** Pico has a separate model implementation. Do not assume that either training script retrains Pico unless its training procedure is explicitly implemented in that script.
 
-Once training has completed successfully and the three model weight files have been generated, launch the application:
+Training time depends on the dataset size, architecture, hardware, and training configuration. A compatible CUDA-enabled GPU can accelerate training when supported by the installed PyTorch environment.
 
-```bash
-python -m streamlit run app.py
-```
+## 🔍 Image Preprocessing and Inference
 
-Open the local URL printed in the terminal, usually:
+When a player submits a drawing, the application converts the canvas output into an image representation suitable for model inference.
 
-`http://localhost:8501`
+The general workflow is:
 
-You can now draw objects, submit your sketches, and see how many AI judges you can convince!
+1. Capture the submitted canvas.
+2. Process the image using the application's preprocessing pipeline.
+3. Resize and convert the image into the required tensor format.
+4. Pass the processed input to each loaded model.
+5. Obtain the predicted class and confidence information, where available.
+6. Compare each top prediction with the target category.
+7. Calculate the round score and update the cumulative score.
 
-## ⚠️ Current Limitations
+Preprocessing, input dimensions, normalization, and class-label ordering must remain compatible with the corresponding model checkpoints.
 
-- The game requires trained model weights, which are not included in the repository by default.
-- Recognition is limited to the object categories used during training.
-- The models may misclassify ambiguous, incomplete, or unusual drawings.
-- The current scoring system uses top-1 predictions and does not incorporate confidence into scoring.
-- Persistent leaderboards, multiplayer gameplay, and countdown timers are not currently implemented.
+## ⚠️ Limitations
 
-## 🔮 Future Enhancements
+- Recognition is restricted to the categories represented in the trained models.
+- Ambiguous, incomplete, or unconventional sketches may be misclassified.
+- Prediction quality depends on the training data, preprocessing pipeline, and checkpoint compatibility.
+- Training may require considerable time and computational resources.
+- Confidence scores do not influence the current scoring system.
+- Gameplay follows a fixed five-round format.
+- Persistent leaderboards, user profiles, and real-time multiplayer are not part of the current core implementation.
+- Checkpoint availability depends on repository contents and Git LFS configuration.
 
-Potential improvements include:
+## 🚀 Future Enhancements
 
-- ⏱️ Timed drawing rounds.
-- 🏅 Persistent leaderboards and player profiles.
-- 👥 Multiplayer rooms and real-time competitions.
-- 🎯 Difficulty levels and adaptive prompts.
-- 📈 Model performance comparisons and evaluation metrics.
-- ✨ Animated AI judge verdicts and enhanced visual feedback.
-- 🧮 Optional confidence-based bonus scoring.
-- 📱 A more responsive interface for mobile devices.
+Potential directions for expanding Drawasaurus include:
+
+- Timed rounds and countdowns.
+- Persistent leaderboards and player profiles.
+- Real-time multiplayer drawing battles.
+- Difficulty levels and adaptive drawing prompts.
+- Model accuracy comparison dashboards.
+- Animated AI verdicts and more detailed prediction feedback.
+- Optional confidence-based bonus scoring.
+- Improved mobile responsiveness and accessibility.
+- Additional drawing categories and model architectures.
 
 ## 📜 Dataset Attribution
 
-This project uses the Google Quick, Draw! dataset.
+Drawasaurus uses data from Google's Quick, Draw! dataset.
 
-- **Dataset repository:** https://github.com/googlecreativelab/quickdraw-dataset
-- **Bitmap data source:** https://storage.googleapis.com/quickdraw_dataset/full/numpy_bitmap/
-- **License:** [Creative Commons Attribution 4.0 (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/)
+- [Quick, Draw! Dataset Repository](https://github.com/googlecreativelab/quickdraw-dataset)
+- [Quick, Draw! NumPy Bitmap Data](https://storage.googleapis.com/quickdraw_dataset/full/numpy_bitmap/)
 
-Please follow the dataset's attribution requirements when using or redistributing its contents.
+Consult the dataset's official documentation and applicable licensing terms before redistributing dataset contents or using them in other projects.
+
+## 👥 Contributors
+
+Drawasaurus is a collaborative project.
 
 ---
 
-**Built with Python, Streamlit, PyTorch, and a little artistic creativity.** 🎨🤖
+**Built with Python, Streamlit, PyTorch, and a little artistic creativity. 🎨🤖**
