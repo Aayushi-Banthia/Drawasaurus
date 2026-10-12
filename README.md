@@ -76,16 +76,18 @@ Drawasaurus uses a selected subset of Google's **Quick, Draw!** dataset, a large
 
 ### Supported Categories
 
-The default configuration includes eight object classes:
+The default configuration includes ten object classes:
 
-- Apple
-- Cat
-- Airplane
-- Fish
-- House
-- Tree
-- Star
-- Bicycle
+-apple
+-bicycle
+-car
+-cat
+-fish
+-house
+-star
+-sun
+-tree
+-umbrella
 
 ### Training Data
 
